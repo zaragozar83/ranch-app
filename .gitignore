@@ -31,6 +31,9 @@ target/
 mvnw
 mvnw.cmd
 
+# Gradle
+*.gradle/
+
 # Package Files
 *.jar
 *.war
