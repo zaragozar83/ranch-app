@@ -1,4 +1,4 @@
-package com.riac.teapcount.ranchapp.controller;
+package com.riac.teapcount.ranchapp.integrationtesting.controller;
 
 import com.riac.teapcount.ranchapp.domain.model.Ranch;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class RanchControllerTest {
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     @Test
-    public void getRanchById() throws Exception {
+    void getRanchById() throws Exception {
 
         ResponseEntity<String> response = restTemplate.getForEntity(
                                                                     createURL(PATH_RANCHES_ID),
@@ -40,7 +40,7 @@ public class RanchControllerTest {
     }
 
     @Test
-    public void getRanchByName() throws Exception {
+    void getRanchByName() throws Exception {
 
         ResponseEntity<String> response = restTemplate.getForEntity(
                 createURL(PATH_RANCHES_NAME),
@@ -50,6 +50,19 @@ public class RanchControllerTest {
 
         JSONAssert.assertEquals(expected, response.getBody(), false);
 
+    }
+
+    @Test
+    void getRanchesByCity() throws Exception {
+
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                createURL(PATH_RANCHES_CITY),
+                String.class
+        );
+
+        String expected = "[{\"id\":1,\"name\":\"Riac\",\"city\":\"Pittsburgh\"},{\"id\":4,\"name\":\"Roswelt\",\"city\":\"Pittsburgh\"}]";
+
+        JSONAssert.assertEquals(expected, response.getBody(), false);
     }
 
     private String createURL(String path) {
