@@ -15,6 +15,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(Exception.class)
     public final ResponseEntity<ExceptionRanchResponse> errorHandlerException(Exception ex) {
 
+        ex.printStackTrace();
         ExceptionRanchResponse exceptionResponse = ExceptionRanchResponse.builder()
                 .message(ex.getMessage())
                 .details("Details of the Ranch Exception")

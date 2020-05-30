@@ -123,6 +123,51 @@ public class RanchControllerTest {
 
     }
 
+    @Test
+    void addRanch() throws Exception {
+
+        Ranch mockResponse = Ranch.builder()
+                .id(7)
+                .name("Mully")
+                .city("Pittsburgh")
+                .build();
+
+        Mockito.when(ranchService.addRanch(ArgumentMatchers.any(Ranch.class))).thenReturn(mockResponse);
+
+        String bodyRequest = "{\"name\":\"Mully\",\"city\":\"Pittsburgh\"}";
+
+        MvcResult result = mvc.perform(
+                MockMvcRequestBuilders.post(PATH_RANCHES)
+                .content(bodyRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String expected = "{\"id\":7,\"name\":\"Mully\",\"city\":\"Pittsburgh\"}";
+
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+
+    }
+
+    @Test
+    void addRanchBadRequestException() throws Exception {
+
+        Ranch mockResponse = Ranch.builder()
+                                  .id(7)
+                                  .name("Mully")
+                                  .build();
+
+        String bodyRequest = "{\"name\":\"Mully\"}";
+
+        Mockito.when(ranchService.addRanch(ArgumentMatchers.any(Ranch.class))).thenReturn(mockResponse);
+
+        mvc.perform(
+                MockMvcRequestBuilders.post(PATH_RANCHES)
+                .content(bodyRequest)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
+
+    }
+
     List<Ranch> initRanches() {
         return Arrays.asList(
                 Ranch.builder().id(1).name("Riac").city("Pittsburgh").build(),

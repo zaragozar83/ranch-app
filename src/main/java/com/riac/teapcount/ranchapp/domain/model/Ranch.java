@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,6 +14,10 @@ import lombok.NoArgsConstructor;
 public class Ranch {
 
     private int id;
+
+    @NotNull
     private String name;
+
+    @NotNull
     private String city;
 }

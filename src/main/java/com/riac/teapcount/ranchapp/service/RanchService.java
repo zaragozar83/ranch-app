@@ -10,4 +10,5 @@ public interface RanchService {
     public List<Ranch> getRanches();
     public Ranch getRanchByName(String name);
     public List<Ranch> getRanchesByCity(String city);
+    public Ranch addRanch(Ranch ranch);
 }

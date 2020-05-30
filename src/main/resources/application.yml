@@ -1,0 +1,3 @@
+logging.level:
+  com.riac.teapcount.ranchapp: DEBUG
+  org.springframework: DEBUG

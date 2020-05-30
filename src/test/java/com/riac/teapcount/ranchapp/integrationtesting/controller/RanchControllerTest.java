@@ -1,11 +1,13 @@
 package com.riac.teapcount.ranchapp.integrationtesting.controller;
 
 import com.riac.teapcount.ranchapp.domain.model.Ranch;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
@@ -63,6 +65,47 @@ public class RanchControllerTest {
         String expected = "[{\"id\":1,\"name\":\"Riac\",\"city\":\"Pittsburgh\"},{\"id\":4,\"name\":\"Roswelt\",\"city\":\"Pittsburgh\"}]";
 
         JSONAssert.assertEquals(expected, response.getBody(), false);
+    }
+
+    @Test
+    void addRanch() throws Exception {
+
+        Ranch ranchBody = Ranch.builder()
+                                .name("Mully")
+                                .city("Pittsburgh")
+                                .build();
+
+        ResponseEntity<Ranch> response = restTemplate.postForEntity(
+                                                                    createURL(PATH_RANCHES),
+                                                                    ranchBody,
+                                                                    Ranch.class
+                                                                    );
+
+        Ranch expectedRanch = Ranch.builder()
+                                    .id(7)
+                                    .name("Mully")
+                                    .city("Pittsburgh")
+                                    .build();
+
+        Assertions.assertEquals(expectedRanch, response.getBody());
+
+    }
+
+    @Test
+    void addRanchBadRequest() throws Exception {
+
+        Ranch ranchBody = Ranch.builder()
+                .name("Mully")
+                .build();
+
+        ResponseEntity<Ranch> response = restTemplate.postForEntity(
+                createURL(PATH_RANCHES),
+                ranchBody,
+                Ranch.class
+        );
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
     }
 
     private String createURL(String path) {
