@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -15,9 +16,11 @@ public class Ranch {
 
     private int id;
 
-    @NotNull
+    @NotNull(message = "The name must not be null")
+    @NotEmpty(message = "The name Ranch must to be not empty")
     private String name;
 
-    @NotNull
+    @NotNull(message = "The city must not be null")
+    @NotEmpty(message = "The city for Ranch must to be not empty")
     private String city;
 }

@@ -23,7 +23,7 @@ public class RanchControllerTest {
     private final String PATH_RANCHES = "/ranches";
     private final String PATH_RANCHES_ID = "/ranches/1";
     private final String PATH_RANCHES_NAME = "/ranches/Riac/name";
-    private final String PATH_RANCHES_WRONG_NAME = "/ranches/Riac";
+    private final String PATH_RANCHES_WRONG_NAME = "/ranches/10";
     private final String PATH_RANCHES_CITY = "/ranches/Pittsburgh/city";
 
     private TestRestTemplate restTemplate = new TestRestTemplate();
@@ -72,7 +72,7 @@ public class RanchControllerTest {
 
         Ranch ranchBody = Ranch.builder()
                                 .name("Mully")
-                                .city("Pittsburgh")
+                                .city("Pachuca")
                                 .build();
 
         ResponseEntity<Ranch> response = restTemplate.postForEntity(
@@ -84,7 +84,7 @@ public class RanchControllerTest {
         Ranch expectedRanch = Ranch.builder()
                                     .id(7)
                                     .name("Mully")
-                                    .city("Pittsburgh")
+                                    .city("Pachuca")
                                     .build();
 
         Assertions.assertEquals(expectedRanch, response.getBody());
@@ -106,6 +106,18 @@ public class RanchControllerTest {
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
+    }
+
+    @Test
+    void getRanchByIdNotFoundException() throws Exception {
+
+        ResponseEntity<String> response = restTemplate.getForEntity(createURL(PATH_RANCHES_WRONG_NAME),
+                                                                            String.class);
+
+        System.out.println(response);
+
+        Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        Assertions.assertTrue(response.getBody().contains("The Ranch: 10 is not found"));
     }
 
     private String createURL(String path) {
