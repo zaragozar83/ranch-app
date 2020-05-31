@@ -1,3 +1,6 @@
 logging.level:
   com.riac.teapcount.ranchapp: DEBUG
-  org.springframework: DEBUG
+#  org.springframework: DEBUG
+
+#security.user.name: rzaragoza
+#security.user.password: zaragoza

@@ -7,10 +7,15 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,15 +32,34 @@ public class RanchControllerTest {
     private final String PATH_RANCHES_CITY = "/ranches/Pittsburgh/city";
 
     private TestRestTemplate restTemplate = new TestRestTemplate();
+    HttpHeaders headers = createHeaders("rzaragoza", "zaragoza");
+
+    private HttpHeaders createHeaders(String username, String password) {
+
+        return new HttpHeaders() {
+            {
+                String auth = username + ":" + password;
+                byte[] encodedAuth = Base64.getEncoder().encode(
+                        auth.getBytes(Charset.forName("US-ASCII")));
+                String authHeader = "Basic " + new String(encodedAuth);
+                set("Authorization", authHeader);
+            }
+        };
+    }
 
     @Test
     void getRanchById() throws Exception {
 
-        ResponseEntity<String> response = restTemplate.getForEntity(
+        /*ResponseEntity<String> response = restTemplate.getForEntity(
                                                                     createURL(PATH_RANCHES_ID),
-                                                                    String.class);
+                                                                    String.class);*/
 
-        String expected = "{\"id\": 1,\"name\": \"Riac\",\"city\": \"Pittsburgh\"}";
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURL(PATH_RANCHES_ID), HttpMethod.GET,
+                new HttpEntity<String>(null, headers),
+                String.class);
+
+                String expected = "{\"id\": 1,\"name\": \"Riac\",\"city\": \"Pittsburgh\"}";
 
         JSONAssert.assertEquals(expected, response.getBody().toString(), false);
 
@@ -44,8 +68,9 @@ public class RanchControllerTest {
     @Test
     void getRanchByName() throws Exception {
 
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                createURL(PATH_RANCHES_NAME),
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURL(PATH_RANCHES_NAME), HttpMethod.GET,
+                new HttpEntity<String>(null, headers),
                 String.class);
 
         String expected = "{\"id\": 1,\"name\": \"Riac\",\"city\": \"Pittsburgh\"}";
@@ -57,10 +82,10 @@ public class RanchControllerTest {
     @Test
     void getRanchesByCity() throws Exception {
 
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                createURL(PATH_RANCHES_CITY),
-                String.class
-        );
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURL(PATH_RANCHES_CITY), HttpMethod.GET,
+                new HttpEntity<String>(null, headers),
+                String.class);
 
         String expected = "[{\"id\":1,\"name\":\"Riac\",\"city\":\"Pittsburgh\"},{\"id\":4,\"name\":\"Roswelt\",\"city\":\"Pittsburgh\"}]";
 
@@ -75,11 +100,10 @@ public class RanchControllerTest {
                                 .city("Pachuca")
                                 .build();
 
-        ResponseEntity<Ranch> response = restTemplate.postForEntity(
-                                                                    createURL(PATH_RANCHES),
-                                                                    ranchBody,
-                                                                    Ranch.class
-                                                                    );
+        ResponseEntity<Ranch> response = restTemplate.exchange(
+                createURL(PATH_RANCHES), HttpMethod.POST,
+                new HttpEntity<Ranch>(ranchBody, headers),
+                Ranch.class);
 
         Ranch expectedRanch = Ranch.builder()
                                     .id(7)
@@ -98,11 +122,10 @@ public class RanchControllerTest {
                 .name("Mully")
                 .build();
 
-        ResponseEntity<Ranch> response = restTemplate.postForEntity(
-                createURL(PATH_RANCHES),
-                ranchBody,
-                Ranch.class
-        );
+        ResponseEntity<Ranch> response = restTemplate.exchange(
+                createURL(PATH_RANCHES), HttpMethod.POST,
+                new HttpEntity<Ranch>(ranchBody, headers),
+                Ranch.class);
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -111,10 +134,10 @@ public class RanchControllerTest {
     @Test
     void getRanchByIdNotFoundException() throws Exception {
 
-        ResponseEntity<String> response = restTemplate.getForEntity(createURL(PATH_RANCHES_WRONG_NAME),
-                                                                            String.class);
-
-        System.out.println(response);
+        ResponseEntity<String> response = restTemplate.exchange(
+                createURL(PATH_RANCHES_WRONG_NAME), HttpMethod.GET,
+                new HttpEntity<String>(null, headers),
+                String.class);
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         Assertions.assertTrue(response.getBody().contains("The Ranch: 10 is not found"));
